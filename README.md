@@ -1,0 +1,2 @@
+# JournalX
+ Recreating JournalX
