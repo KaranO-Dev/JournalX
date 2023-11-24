@@ -14,9 +14,12 @@ struct EntryInputView: View {
     @State private var isBookmarked = false
     @State private var showDatePicker = false
     @State private var selectedDate = Date()
+    @State private var engine: CHHapticEngine?
+
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var reminderStore: ReminderStore
-    @State private var engine: CHHapticEngine?
+    @Environment(\.colorScheme) var colorScheme
+
     
     
     var today: String {
@@ -30,15 +33,16 @@ struct EntryInputView: View {
         NavigationView {
             ZStack {
                 TextEditor(text: $reminderNotes)
-                    .foregroundColor(reminderNotes == "Start Writing..." ? .gray : .white)
-                    .onTapGesture {
-                        if reminderNotes == "Start Writing..." {
-                            reminderNotes = ""
-                        }
-                        giveHapticFeedback()
-                    }
-                    .accessibility(label: Text("Text Editor"))
-                    .accessibility(hint: Text("Double tap to start writing."))
+                            .foregroundColor(getColorForText())
+                            .onTapGesture {
+                                if reminderNotes == "Start Writing..." {
+                                    reminderNotes = ""
+                                }
+                                giveHapticFeedback()
+                            }
+                            .accessibility(label: Text("Text Editor"))
+                            .accessibility(hint: Text("Double tap to start writing."))
+                
                 
                 if showDatePicker {
                     
@@ -54,10 +58,8 @@ struct EntryInputView: View {
                             .accessibility(hint: Text("Adjust the date by swiping up or down."))
                         
                         Button("Done") {
-                            withAnimation {
                                 showDatePicker = false
                                 giveHapticFeedback(strength: .hapticIntensity)
-                            }
                         }
                         .padding()
                         .frame(maxWidth: .infinity)
@@ -69,10 +71,9 @@ struct EntryInputView: View {
                         .accessibility(hint: Text("Double tap to close the date picker."))
                         
                         Button("Cancel") {
-                            withAnimation {
                                 showDatePicker = false
                                 giveHapticFeedback()
-                            }
+                            
                         }
                         .padding()
                         .frame(maxWidth: .infinity)
@@ -225,6 +226,9 @@ struct EntryInputView: View {
         }
     }
     
+    func getColorForText() -> Color {
+          return reminderNotes == "Start Writing..." ? .gray : (colorScheme == .light ? .black : .white)
+      }
     func giveHapticFeedback(strength: CHHapticEvent.ParameterID = .hapticIntensity) {
         do {
             let event = CHHapticEvent(eventType: .hapticTransient, parameters: [], relativeTime: 0)
