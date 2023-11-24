@@ -9,9 +9,11 @@ import SwiftUI
 
 @main
 struct JournalXApp: App {
+    let reminderStore = ReminderStore()
+
     var body: some Scene {
         WindowGroup {
-            MainView()
+            MainView().environmentObject(reminderStore)
         }
     }
 }
